@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  mysql8:
+    image: mysql:8
+    platform: linux/x86_64
+    volumes:
+      - ./docker/mysql/initdb:/docker-entrypoint-initdb.d
+      - ./docker/mysql/sql:/docker-entrypoint-initdb.d/sql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d
+      - ./docker/mysql/log:/var/log/mysql
+    ports:
+      - 3310:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      TZ: 'Asia/Tokyo'
