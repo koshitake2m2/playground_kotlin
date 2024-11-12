@@ -8,18 +8,17 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
 
-@Serializable
+data class UserName(val value: String)
+
 data class UserUpsertRequest(
     val id: String?,
-    val name: String,
+    val name: UserName,
 )
 
-@Serializable
 data class UserResponse(
     val id: String,
-    val name: String,
+    val name: UserName,
 )
 
 fun Application.configureRouting() {
@@ -46,13 +45,17 @@ fun Application.configureRouting() {
             call.respondText(text, type)
         }
 
+        /**
+         * curl -X GET -H "Content-Type: application/json" "http://localhost:10000/users/123" -i
+         */
         get("/users/{userId}") {
             val userId = call.parameters["userId"]
             if (userId == null)  {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
-            val user = UserResponse(id = userId, name = "Bob")
+            val userName = UserName("Bob")
+            val user = UserResponse(id = userId, name = userName)
             call.respond(listOf(user))
         }
 

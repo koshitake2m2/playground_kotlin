@@ -19,6 +19,10 @@
 ```bash
 # In terminal A
 ./gradlew -t :ktor:build
+./gradlew -t :ktor:build -x test -i
+
 # In terminal B
 ./gradlew -t :ktor:run
 ```
+
+ref: https://ktor.io/docs/server-auto-reload.html

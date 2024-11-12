@@ -1,12 +1,17 @@
 package org.example.ktor
 
 
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-        json()
+//        kotlinx.serialization
+//        json()
+
+        jackson {
+            registerModule(UserJsonModule())
+        }
     }
 }
