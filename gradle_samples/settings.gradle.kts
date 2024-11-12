@@ -7,4 +7,5 @@ plugins {
 rootProject.name = "gradle_samples"
 include("app", "list", "utilities", "ktor")
 
+project(":app").projectDir = file("app")
 project(":ktor").projectDir = file("ktor")
