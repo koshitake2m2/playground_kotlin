@@ -1,4 +1,4 @@
-package org.example.ktor
+package com.example.ktor
 
 import io.ktor.server.application.*
 import io.ktor.server.engine.*

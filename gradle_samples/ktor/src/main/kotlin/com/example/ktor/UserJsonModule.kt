@@ -1,4 +1,4 @@
-package org.example.ktor
+package com.example.ktor
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
