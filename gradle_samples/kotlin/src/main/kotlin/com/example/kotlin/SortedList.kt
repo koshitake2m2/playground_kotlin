@@ -18,7 +18,7 @@ class SortedList<T : Comparable<T>> private constructor(private val sorted: List
     }
 
     override fun hashCode(): Int {
-        return sorted.hashCode()
+        return sorted.hashCode() * 31
     }
 
     override fun toString(): String {

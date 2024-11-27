@@ -28,6 +28,16 @@ class SortedListTest : DescribeSpec({
             (x == y) shouldBe false
             x shouldNotBe y
         }
+        it("should return different if other is not SortedList") {
+            val x = SortedList.of(5, 3, 4, 1, 2)
+            val y = listOf(1, 2, 3, 4, 5)
+            x.hashCode() shouldNotBe y.hashCode()
+            x.equals(y) shouldBe false
+            (x == y) shouldBe false
+
+            // This will pass, but it should fail
+            // x shouldNotBe y
+        }
     }
     describe("toString") {
         it("should return sorted list") {
