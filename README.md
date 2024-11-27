@@ -20,21 +20,25 @@ mysql -h 127.0.0.1 -P3310 -u root -ppassword
 - Build, Execution, Deployment > Compiler > Kotlin Compiler > Kotlin to JVM > Target JVM version
 - Build, Execution, Deployment > Compiler > Kotlin Compiler > Gradle Projects > Gradle JVM
 - Project Structure > Project Settings > Project
-  - SDK
-  - Language level
+    - SDK
+    - Language level
 - Project Structure > Project Settings > Modules
-  - Add next projects if needed:
-    - playground_kotlin
-    - gradle_samples
-    - pom_samples/kotlin
-    - pom_samples/springboot
+    - Add next projects if needed:
+        - playground_kotlin
+        - gradle_samples
+        - pom_samples/kotlin
+        - pom_samples/springboot
 
 ### Format
 
 - Version Control > Confirmation
-  - When files are created: `Add silently`
+    - When files are created: `Add silently`
 - Tools > Actions on Save
-  - Reformat code: `Changed lines`
+    - Reformat code: `Changed lines`
 - Editor > Code Style > Kotlin
-  - If needed...
+    - If needed...
 
+### Plugins
+
+- kotest
+    - [kotest Plugin for JetBrains IDEs | JetBrains Marketplace](https://plugins.jetbrains.com/plugin/14080-kotest)

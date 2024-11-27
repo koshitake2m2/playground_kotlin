@@ -1,29 +1,40 @@
 package com.example.kotlin
 
-data class SortedList<T : Comparable<T>>(private val unsorted: List<T>) : List<T> by unsorted.sorted() {
+/**
+ * Requirements
+ * - equals/hashCode returns same if two lists are equal
+ * - toString returns sorted list
+ * - It does not allow to generate SortedList with unsorted
+ *   - copy should not exist
+ *   - private constructor should be used
+ *   - factory methods with sorting should be used
+ *
+ * Check [com.example.kotlin.SortedListTest] for test cases
+ */
+class SortedList<T : Comparable<T>> private constructor(private val sorted: List<T>) : List<T> by sorted {
+
+    override fun equals(other: Any?): Boolean {
+        return other is SortedList<*> && sorted == other.sorted
+    }
+
+    override fun hashCode(): Int {
+        return sorted.hashCode()
+    }
+
+    override fun toString(): String {
+        return "SortedList(sorted=$sorted)"
+    }
+
     companion object {
-        fun <T : Comparable<T>> of(vararg elementArray: T): SortedList<T> = SortedList(elementArray.toList())
+        fun <T : Comparable<T>> of(vararg elementArray: T): SortedList<T> =
+            SortedList(elementArray.toList().sorted())
+
+        fun <T : Comparable<T>> reversedOf(vararg elementArray: T): SortedList<T> =
+            SortedList(elementArray.toList().sortedDescending())
     }
 }
 
-data class Point(val x: Int, val y: Int) : Comparable<Point> {
-    override fun compareTo(other: Point): Int {
-        return compareValuesBy(this, other, Point::x, Point::y)
-    }
-}
-
-fun main(): Unit {
+fun main() {
     val sortedInt = SortedList.of(3, 2, 5, 4, 1)
-    println("unsorted: ${sortedInt}")
-    println("sorted: ${sortedInt.toList()}")
-
-    val sortedPoints = SortedList.of(
-        Point(3, 5),
-        Point(2, 3),
-        Point(5, 4),
-        Point(4, 2),
-        Point(1, 1),
-    )
-    println("unsorted: ${sortedPoints}")
-    println("sorted: ${sortedPoints.toList()}")
+    println("result: ${sortedInt}")
 }
