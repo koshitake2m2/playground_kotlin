@@ -11,18 +11,18 @@ package com.example.kotlin
  *
  * Check [com.example.kotlin.SortedListTest] for test cases
  */
-class SortedList<T : Comparable<T>> private constructor(private val sorted: List<T>) : List<T> by sorted {
+class SortedList<T : Comparable<T>> private constructor(private val elements: List<T>) : List<T> by elements {
 
     override fun equals(other: Any?): Boolean {
-        return other is SortedList<*> && sorted == other.sorted
+        return other is SortedList<*> && elements == other.elements
     }
 
     override fun hashCode(): Int {
-        return sorted.hashCode() * 31
+        return elements.hashCode() * 31
     }
 
     override fun toString(): String {
-        return "SortedList(sorted=$sorted)"
+        return "SortedList(elements=$elements)"
     }
 
     companion object {

@@ -42,7 +42,7 @@ class SortedListTest : DescribeSpec({
     describe("toString") {
         it("should return sorted list") {
             val sortedInt = SortedList.of(3, 2, 5, 4, 1)
-            sortedInt.toString() shouldBe "SortedList(sorted=[1, 2, 3, 4, 5])"
+            sortedInt.toString() shouldBe "SortedList(elements=[1, 2, 3, 4, 5])"
         }
     }
     describe("of") {
