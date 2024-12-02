@@ -25,7 +25,14 @@ fun Application.configureRouting() {
     install(StatusPages) {
         // catch errors
         exception<RuntimeException> { call, cause ->
+            println("RuntimeException as ${cause.message}")
             call.respondText("RuntimeException as ${cause.message}")
+        }
+        // NOTE: Throwable is parent of all exceptions. If subclasses are registered to [StatusPagesConfig.exception], they are matched first. If not, registered superclass is matched.
+        // e.g. RuntimeException : Exception : Throwable
+        exception<Throwable> { call, cause ->
+            println("Throwable as ${cause.message}")
+            call.respondText("Throwable as ${cause.message}")
         }
     }
     routing {
@@ -50,7 +57,7 @@ fun Application.configureRouting() {
          */
         get("/users/{userId}") {
             val userId = call.parameters["userId"]
-            if (userId == null)  {
+            if (userId == null) {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
