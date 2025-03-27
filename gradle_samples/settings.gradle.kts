@@ -4,8 +4,9 @@ plugins {
 }
 
 rootProject.name = "gradle_samples"
-include("kotlin", "ktor", "temporal")
+include("kotlin", "ktor", "temporal", "koin")
 
 project(":kotlin").projectDir = file("kotlin")
 project(":ktor").projectDir = file("ktor")
 project(":temporal").projectDir = file("temporal")
+project(":koin").projectDir = file("koin")
