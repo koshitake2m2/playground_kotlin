@@ -15,9 +15,9 @@ object DatabaseFactory {
     private fun hikari(): HikariDataSource {
         val config = HikariConfig()
         config.driverClassName = "com.mysql.cj.jdbc.Driver"
-        config.jdbcUrl = "jdbc:mysql://localhost:3310/sample_db?useSSL=false&allowPublicKeyRetrieval=true"
-        config.username = "test_user"
-        config.password = "test_password"
+        config.jdbcUrl = DatabaseConfig.getJdbcUrl()
+        config.username = DatabaseConfig.USERNAME
+        config.password = DatabaseConfig.PASSWORD
         config.maximumPoolSize = 3
         config.isAutoCommit = false
         config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"

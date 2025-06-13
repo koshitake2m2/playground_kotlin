@@ -37,3 +37,20 @@ services:
       FLYWAY_SCHEMAS: sample_db
       FLYWAY_DEFAULT_SCHEMA: sample_db
       TZ: 'Asia/Tokyo'
+
+  mysql-migrated:
+    build:
+      context: .
+      dockerfile: ./mysql-migrated/Dockerfile
+    platform: linux/x86_64
+    ports:
+      - 3311:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      TZ: 'Asia/Tokyo'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
