@@ -2,6 +2,12 @@
 
 ## Tips
 
+### docker
+
+```bash
+docker compose -f docker/gradle_samples/compose.yml up -d
+```
+
 ### Run in Terminal
 
 ```bash
