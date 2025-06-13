@@ -1,0 +1,39 @@
+services:
+  mysql8:
+    image: mysql:8
+    platform: linux/x86_64
+    volumes:
+      - ./mysql8/initdb:/docker-entrypoint-initdb.d
+      - ./mysql8/conf.d:/etc/mysql/conf.d
+      - ./mysql8/log:/var/log/mysql
+    ports:
+      - 3310:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      TZ: 'Asia/Tokyo'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mysql-flyway:
+    image: flyway/flyway:9-alpine
+    platform: linux/x86_64
+    command: -connectRetries=60 migrate
+    volumes:
+      - ./mysql-flyway/sql:/flyway/sql
+      - ./mysql-flyway/conf:/flyway/conf
+    depends_on:
+      mysql8:
+        condition: service_healthy
+    environment:
+      FLYWAY_URL: jdbc:mysql://mysql8:3306/sample_db?allowPublicKeyRetrieval=true&useSSL=false
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: password
+      FLYWAY_CONNECT_RETRIES: 60
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_SCHEMAS: sample_db
+      FLYWAY_DEFAULT_SCHEMA: sample_db
+      TZ: 'Asia/Tokyo'
