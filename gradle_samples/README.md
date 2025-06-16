@@ -13,6 +13,7 @@ docker compose -f docker/gradle_samples/compose.yml up -d
 ```bash
 ./gradlew :app:run
 ./gradlew :ktor:run
+./gradlew :ktor:integrationTest --rerun-tasks --info
 ```
 
 ### Run in IDEA

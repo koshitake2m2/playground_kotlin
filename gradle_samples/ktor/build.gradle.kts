@@ -47,11 +47,69 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.1")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("org.testcontainers:testcontainers:1.21.1")
+    testImplementation("org.testcontainers:mysql:1.21.1")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 }
 
 tasks.test {
     useJUnitPlatform()
+    maxParallelForks = 3
+    systemProperty("junit.jupiter.execution.parallel.enabled", "true")
+    systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
+    systemProperty("junit.jupiter.execution.parallel.config.strategy", "fixed")
+    systemProperty("junit.jupiter.execution.parallel.config.fixed.parallelism", "3")
+    
+    // TestContainers configuration
+    systemProperty("testcontainers.reuse.enable", "true")
 }
+
+// Create integration test source set
+sourceSets {
+    create("integrationTest") {
+        kotlin {
+            srcDir("src/integrationTest/kotlin")
+        }
+        resources {
+            srcDir("src/integrationTest/resources")
+        }
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }
+}
+
+// Configure integration test dependencies
+configurations["integrationTestImplementation"].extendsFrom(configurations.testImplementation.get())
+configurations["integrationTestRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
+
+// Create integration test task
+val integrationTest = task<Test>("integrationTest") {
+    description = "Runs integration tests."
+    group = "verification"
+    
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+    shouldRunAfter("test")
+    
+    useJUnitPlatform()
+    maxParallelForks = 3
+    systemProperty("junit.jupiter.execution.parallel.enabled", "true")
+    systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
+    systemProperty("junit.jupiter.execution.parallel.config.strategy", "fixed")
+    systemProperty("junit.jupiter.execution.parallel.config.fixed.parallelism", "3")
+    
+    // TestContainers configuration
+    systemProperty("testcontainers.reuse.enable", "true")
+}
+
+// Fix duplicate resource handling
+tasks.named<ProcessResources>("processIntegrationTestResources") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.check { dependsOn(integrationTest) }
 
 // カスタムタスク: データベーステーブル情報を表示
 tasks.register("showTables") {
