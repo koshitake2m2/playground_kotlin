@@ -94,7 +94,7 @@ val integrationTest = task<Test>("integrationTest") {
     shouldRunAfter("test")
     
     useJUnitPlatform()
-    maxParallelForks = 3
+    maxParallelForks = 1
     systemProperty("junit.jupiter.execution.parallel.enabled", "true")
     systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
     systemProperty("junit.jupiter.execution.parallel.config.strategy", "fixed")
