@@ -61,3 +61,46 @@ tasks.withType<Test>().configureEach {
         }))
     }
 }
+
+tasks.register("listTestClasses") {
+    description = "Lists all test classes in the kotlin module"
+    group = "verification"
+    
+    doLast {
+        val testSourceSet = sourceSets["test"]
+        val testKotlinFiles = testSourceSet.kotlin.files
+        
+        println("\n========== Test Classes in :kotlin module ==========")
+        
+        var count = 0
+        testKotlinFiles
+            .filter { it.extension == "kt" }
+            .forEach { file ->
+                val content = file.readText()
+                // Match class declarations including those that extend other classes
+                val classPattern = """class\s+(\w+)\s*(?::\s*[\w<>,\s()]+)?\s*\{""".toRegex()
+                val matches = classPattern.findAll(content)
+                
+                matches.forEach { match ->
+                    val className = match.groupValues[1]
+                    // Include all classes in test files, not just those ending with specific suffixes
+                    count++
+                    val packageName = content.lines()
+                        .firstOrNull { it.startsWith("package ") }
+                        ?.removePrefix("package ")
+                        ?.trim()
+                    
+                    val fullClassName = if (packageName != null) {
+                        "$packageName.$className"
+                    } else {
+                        className
+                    }
+                    
+                    println("  $count. $fullClassName")
+                }
+            }
+        
+        println("\nTotal test classes found: $count")
+        println("====================================================")
+    }
+}
