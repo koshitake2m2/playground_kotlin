@@ -1,18 +1,5 @@
 ## playground kotlin
 
-## Usage
-
-### docker
-
-```
-docker-compose build
-docker-compose up -d
-docker-compose restart
-docker-compose logs -f mysql8
-
-mysql -h 127.0.0.1 -P3310 -u root -ppassword
-```
-
 ## Idea Setup
 
 ### Build
@@ -37,8 +24,3 @@ mysql -h 127.0.0.1 -P3310 -u root -ppassword
     - Reformat code: `Changed lines`
 - Editor > Code Style > Kotlin
     - If needed...
-
-### Plugins
-
-- kotest
-    - [kotest Plugin for JetBrains IDEs | JetBrains Marketplace](https://plugins.jetbrains.com/plugin/14080-kotest)

@@ -5,7 +5,7 @@
 ### docker
 
 ```bash
-docker compose -f docker/gradle_samples/compose.yml up -d
+docker compose -f docker/compose.yml up -d
 ```
 
 ### Run in Terminal
@@ -33,3 +33,9 @@ docker compose -f docker/gradle_samples/compose.yml up -d
 ```
 
 ref: https://ktor.io/docs/server-auto-reload.html
+
+
+### Plugins
+
+- kotest
+    - [kotest Plugin for JetBrains IDEs | JetBrains Marketplace](https://plugins.jetbrains.com/plugin/14080-kotest)
