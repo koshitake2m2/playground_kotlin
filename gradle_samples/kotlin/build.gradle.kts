@@ -2,6 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.kotlin.dsl.KotlinClosure2
+import java.io.File
 
 val ktor_version: String by project
 val kotlin_version: String by project
@@ -102,5 +103,36 @@ tasks.register("listTestClasses") {
         
         println("\nTotal test classes found: $count")
         println("====================================================")
+    }
+}
+
+// Alternative approach using test task configuration
+tasks.register("listTestClassesFromTestTask") {
+    description = "Lists test classes using test task scan"
+    group = "verification"
+    dependsOn("testClasses")
+    
+    doLast {
+        println("\n========== Test Classes (from compiled classes) ==========")
+        
+        val testClassesDir = layout.buildDirectory.dir("classes/kotlin/test").get().asFile
+        var count = 0
+        
+        if (testClassesDir.exists()) {
+            testClassesDir.walkTopDown()
+                .filter { it.isFile && it.extension == "class" && !it.name.contains("$") }
+                .forEach { classFile ->
+                    val relativePath = classFile.relativeTo(testClassesDir).path
+                    val className = relativePath
+                        .removeSuffix(".class")
+                        .replace(File.separatorChar, '.')
+                    
+                    count++
+                    println("  $count. $className")
+                }
+        }
+        
+        println("\nTotal test classes found: $count")
+        println("==========================================================")
     }
 }
