@@ -11,28 +11,43 @@ open class ListTestClassesFromCompiledTask : DefaultTask() {
     @TaskAction
     fun listTestClasses() {
         val testClassesDir = project.layout.buildDirectory.dir("classes/kotlin/test").get().asFile
+        val testClasses = findTestClassesFromCompiledFiles(testClassesDir)
         
-        println("\n========== Test Classes (from compiled classes) ==========")
-        
-        var count = 0
-        
-        if (testClassesDir.exists()) {
-            testClassesDir.walkTopDown()
-                .filter { it.isFile && it.extension == "class" && !it.name.contains("$") }
-                .forEach { classFile ->
-                    val relativePath = classFile.relativeTo(testClassesDir).path
-                    val className = relativePath
-                        .removeSuffix(".class")
-                        .replace(File.separatorChar, '.')
-                    
-                    count++
-                    println("  $count. $className")
-                }
-        } else {
-            println("  No test classes found (directory does not exist)")
+        printTestClasses(testClasses)
+    }
+    
+    /**
+     * Finds test classes from compiled .class files in the given directory.
+     * This method is separated for testability.
+     */
+    internal fun findTestClassesFromCompiledFiles(testClassesDir: File): List<String> {
+        if (!testClassesDir.exists()) {
+            return emptyList()
         }
         
-        println("\nTotal test classes found: $count")
+        return testClassesDir.walkTopDown()
+            .filter { it.isFile && it.extension == "class" && !it.name.contains("$") }
+            .map { classFile ->
+                val relativePath = classFile.relativeTo(testClassesDir).path
+                relativePath
+                    .removeSuffix(".class")
+                    .replace(File.separatorChar, '.')
+            }
+            .toList()
+    }
+    
+    private fun printTestClasses(testClasses: List<String>) {
+        println("\n========== Test Classes (from compiled classes) ==========")
+        
+        if (testClasses.isEmpty()) {
+            println("  No test classes found")
+        } else {
+            testClasses.forEachIndexed { index, className ->
+                println("  ${index + 1}. $className")
+            }
+        }
+        
+        println("\nTotal test classes found: ${testClasses.size}")
         println("==========================================================")
     }
 }
