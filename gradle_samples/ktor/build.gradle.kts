@@ -8,6 +8,7 @@ plugins {
     id("io.ktor.plugin") version "2.3.12"
     id("buildlogic.kotlin-library-conventions")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
+    id("buildlogic.test-conventions")
 }
 
 application {
