@@ -86,6 +86,7 @@ The ktor module follows a layered architecture:
 Located in `ktor/src/main/kotlin/com/example/kotlinx/`:
 - **FlowSamples.kt**: Basic Flow patterns, StateFlow, SharedFlow, error handling, debouncing
 - **FlowAdvancedSamples.kt**: CallbackFlow, ChannelFlow, custom operators, circuit breaker patterns
+- **FlowAsync.kt**: Async processing patterns with collect, including concurrent processing and completion waiting
 - **WaitLazyListItem.kt**: Parallel processing with `async`/`await` patterns
 
 ### Custom Gradle Tasks
@@ -101,6 +102,9 @@ Located in `ktor/src/main/kotlin/com/example/kotlinx/`:
 - **Custom test fixtures** with `TestAuthorDao` and `TestPostDao` for consistent test data
 
 ## Development Workflow
+
+### Important Development Practice
+**After implementing new code, always run `./gradlew compileTestKotlin` to verify compilation and fix any errors before proceeding.**
 
 ### Recommended Setup
 1. Start database: `docker compose -f docker/compose.yml up -d`
