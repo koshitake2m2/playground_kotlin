@@ -13,12 +13,15 @@ object DeferredSimple {
 
     suspend fun expensiveRepeat(size: Int): Unit {
         coroutineScope {
-            val tasks = List(size) { i ->
+            // Using mutableList to collect results instead of a list of deferred.
+            // A list of deferred takes more memory.
+            val results = mutableListOf<Int>()
+            List(size) { i ->
                 async(Dispatchers.Default) {
-                    expensiveComputation(i + 1)
+                    val r = expensiveComputation(i + 1)
+                    results.add(r)
                 }
-            }
-            val results = tasks.awaitAll()
+            }.awaitAll()
             println("Results: $results")
         }
     }
@@ -28,7 +31,7 @@ object DeferredSimple {
             flow { repeat(size) { emit(it) } }
                 .map { i ->
                     async(Dispatchers.Default) {
-                        expensiveComputation(i + 1)
+                        val r = expensiveComputation(i + 1)
 //                        if (i % 10 == 0) {
 //                            // Simulate an error. This will cause the flow to fail.
 //                            throw RuntimeException("Error at $i")
@@ -43,16 +46,26 @@ object DeferredSimple {
 }
 
 // Maybe about 10 suspended functions can run concurrently.
-fun main() {
-    runBlocking {
-        val t = measureTime {
-            DeferredSimple.expensiveRepeat(64)
+object DeferredSimpleMain {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        runBlocking {
+            val t = measureTime {
+                DeferredSimple.expensiveRepeat(64)
+            }
+            println("Total time: $t ms") // about 7s
         }
-        println("Total time: $t ms") // about 7s
+    }
+}
 
-        val t2 = measureTime {
-            DeferredSimple.expensiveRepeatWithFlow(64)
+object DeferredSimpleFlowMain {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        runBlocking {
+            val t = measureTime {
+                DeferredSimple.expensiveRepeatWithFlow(64)
+            }
+            println("Total time: $t ms") // about 7s
         }
-        println("Total time: $t2 ms") // about 7s
     }
 }
