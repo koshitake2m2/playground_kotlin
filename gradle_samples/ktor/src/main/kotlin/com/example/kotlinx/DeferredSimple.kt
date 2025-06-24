@@ -31,7 +31,7 @@ object DeferredSimple {
             flow { repeat(size) { emit(it) } }
                 .map { i ->
                     async(Dispatchers.Default) {
-                        val r = expensiveComputation(i + 1)
+                        expensiveComputation(i + 1)
 //                        if (i % 10 == 0) {
 //                            // Simulate an error. This will cause the flow to fail.
 //                            throw RuntimeException("Error at $i")
