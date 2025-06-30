@@ -32,9 +32,14 @@ object DeferredSimple {
                 .map { i ->
                     async(Dispatchers.Default) {
                         expensiveComputation(i + 1)
-//                        if (i % 10 == 0) {
-//                            // Simulate an error. This will cause the flow to fail.
-//                            throw RuntimeException("Error at $i")
+//                        try {
+//                            if (i % 10 == 0) {
+//                                // Simulate an error. This will cause the flow to fail.
+//                                throw RuntimeException("Error at $i")
+//                            }
+//                        }
+//                        catch (e: Exception) {
+//                            println("Caught exception for $i: ${e.message}")
 //                        }
                     }
                 }
