@@ -99,6 +99,69 @@ class ListTestClassesFromCompiledTaskTest {
         )
     }
     
+    @Test
+    fun `findTestClassesFromCompiledFiles filters out non-test classes`() {
+        val classesDir = File(tempDir, "classes")
+        
+        // Create test and non-test class files
+        createClassFile(classesDir, "com/example/HelloTestClass.class")
+        createClassFile(classesDir, "com/example/GreetTestClass.class")
+        createClassFile(classesDir, "com/example/SampleTestData.class")
+        createClassFile(classesDir, "com/example/TestConfig.class")
+        createClassFile(classesDir, "com/example/Helper.class")
+        createClassFile(classesDir, "com/example/UserService.class")
+        
+        val result = task.findTestClassesFromCompiledFiles(classesDir)
+        
+        assertThat(result).containsExactlyInAnyOrder(
+            "com.example.HelloTestClass",
+            "com.example.GreetTestClass"
+        )
+    }
+    
+    @Test
+    fun `findTestClassesFromCompiledFiles recognizes various test naming patterns`() {
+        val classesDir = File(tempDir, "classes")
+        
+        // Create various test pattern class files
+        createClassFile(classesDir, "com/example/UserTest.class")
+        createClassFile(classesDir, "com/example/ServiceTests.class")
+        createClassFile(classesDir, "com/example/BehaviorSpec.class")
+        createClassFile(classesDir, "com/example/ItShould.class")
+        createClassFile(classesDir, "com/example/RegularClass.class")
+        createClassFile(classesDir, "com/example/DataClass.class")
+        createClassFile(classesDir, "com/example/TestRunner.class") // Not a test class
+        createClassFile(classesDir, "com/example/SpecialTest.class")
+        
+        val result = task.findTestClassesFromCompiledFiles(classesDir)
+        
+        assertThat(result).containsExactlyInAnyOrder(
+            "com.example.UserTest",
+            "com.example.ServiceTests",
+            "com.example.BehaviorSpec",
+            "com.example.ItShould",
+            "com.example.SpecialTest"
+        )
+    }
+    
+    @Test
+    fun `findTestClassesFromCompiledFiles excludes classes ending with TestData`() {
+        val classesDir = File(tempDir, "classes")
+        
+        // Create test and non-test class files including TestData classes
+        createClassFile(classesDir, "com/example/SampleTestData.class")
+        createClassFile(classesDir, "com/example/UserTestData.class")
+        createClassFile(classesDir, "com/example/ConfigTestData.class")
+        createClassFile(classesDir, "com/example/ActualTest.class")
+        createClassFile(classesDir, "com/example/TestDataProvider.class")
+        createClassFile(classesDir, "com/example/MyTestData.class")
+        
+        val result = task.findTestClassesFromCompiledFiles(classesDir)
+        
+        // Should only find ActualTest, not the *TestData classes
+        assertThat(result).containsExactly("com.example.ActualTest")
+    }
+    
     private fun createClassFile(baseDir: File, relativePath: String) {
         createFile(baseDir, relativePath, "dummy class content")
     }

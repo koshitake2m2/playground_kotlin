@@ -9,7 +9,13 @@ plugins {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
-    
+    filter {
+        includeTestsMatching("*Test")
+        includeTestsMatching("*Spec")
+    }
+    systemProperty("kotest.filter.specs", "*(Test|Spec)")
+    ignoreFailures = false
+
     val testClasses = mutableSetOf<String>()
     
     testLogging {
@@ -43,8 +49,8 @@ tasks.withType<Test>().configureEach {
 }
 
 // Register the custom tasks
-tasks.register<ListTestClassesFromSourceTask>("listTestClasses")
+tasks.register<ListTestClassesFromSourceTask>("listTestClassesFromSource")
 
-tasks.register<ListTestClassesFromCompiledTask>("listTestClassesFromTestTask") {
+tasks.register<ListTestClassesFromCompiledTask>("listTestClassesFromCompiled") {
     dependsOn("testClasses")
 }

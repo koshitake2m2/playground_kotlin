@@ -33,7 +33,26 @@ open class ListTestClassesFromCompiledTask : DefaultTask() {
                     .removeSuffix(".class")
                     .replace(File.separatorChar, '.')
             }
+            .filter { className ->
+                isTestClass(className)
+            }
             .toList()
+    }
+    
+    /**
+     * Determines if a class is likely a test class based on its name
+     */
+    private fun isTestClass(className: String): Boolean {
+        val simpleClassName = className.substringAfterLast('.')
+        
+        // Check if class name indicates it's a test
+        // Note: We check for exact suffixes to avoid matching classes like "SampleTestData"
+        val testNamePatterns = listOf("Test", "Tests", "Spec", "Should", "TestClass")
+        return testNamePatterns.any { pattern -> 
+            simpleClassName.endsWith(pattern) && 
+            // Exclude cases where "Test" is followed by other words like "TestData"
+            (pattern != "Test" || !simpleClassName.endsWith("TestData"))
+        }
     }
     
     private fun printTestClasses(testClasses: List<String>) {

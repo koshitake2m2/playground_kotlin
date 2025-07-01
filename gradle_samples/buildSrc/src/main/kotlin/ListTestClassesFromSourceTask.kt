@@ -55,20 +55,53 @@ open class ListTestClassesFromSourceTask : DefaultTask() {
             ?.trim()
         
         // Match class declarations including those that extend other classes
-        val classPattern = """class\s+(\w+)\s*(?::\s*[\w<>,\s()]+)?\s*\{""".toRegex()
+        // The pattern looks for "class ClassName" optionally followed by inheritance and then a brace
+        val classPattern = """class\s+(\w+)\s*(?::\s*([\w<>,\s()]+))?""".toRegex()
         val matches = classPattern.findAll(content)
         
         matches.forEach { match ->
             val className = match.groupValues[1]
-            val fullClassName = if (packageName != null) {
-                "$packageName.$className"
-            } else {
-                className
+            val extendsClause = match.groupValues.getOrNull(2) ?: ""
+            
+            // Check if this is likely a test class
+            if (isTestClass(className, extendsClause)) {
+                val fullClassName = if (packageName != null) {
+                    "$packageName.$className"
+                } else {
+                    className
+                }
+                classes.add(fullClassName)
             }
-            classes.add(fullClassName)
         }
         
         return classes
+    }
+    
+    /**
+     * Determines if a class is likely a test class based on its name and what it extends
+     */
+    private fun isTestClass(className: String, extendsClause: String): Boolean {
+        // Check if class name indicates it's a test
+        // Note: We check for exact suffixes to avoid matching classes like "SampleTestData"
+        val testNamePatterns = listOf("Test", "Tests", "Spec", "Should", "TestClass")
+        if (testNamePatterns.any { pattern -> 
+            className.endsWith(pattern) && 
+            // Exclude cases where "Test" is followed by other words like "TestData"
+            (pattern != "Test" || !className.endsWith("TestData"))
+        }) {
+            return true
+        }
+        
+        // Check if it extends a known test base class
+        val testBaseClasses = listOf(
+            "DescribeSpec", "FunSpec", "StringSpec", "ShouldSpec", "BehaviorSpec",
+            "WordSpec", "FreeSpec", "FeatureSpec", "ExpectSpec", "AnnotationSpec"
+        )
+        if (testBaseClasses.any { extendsClause.contains(it) }) {
+            return true
+        }
+        
+        return false
     }
     
     private fun printTestClasses(testClasses: List<String>) {

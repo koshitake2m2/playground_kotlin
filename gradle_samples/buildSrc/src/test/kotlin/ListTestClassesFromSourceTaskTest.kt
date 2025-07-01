@@ -144,18 +144,18 @@ class ListTestClassesFromSourceTaskTest {
         val dir1 = File(tempDir, "src1")
         val dir2 = File(tempDir, "src2")
         
-        createKotlinFile(dir1, "com/example/Test1.kt", """
+        createKotlinFile(dir1, "com/example/UserTest.kt", """
             package com.example
             
-            class Test1 {
+            class UserTest {
                 fun test() {}
             }
         """.trimIndent())
         
-        createKotlinFile(dir2, "org/sample/Test2.kt", """
+        createKotlinFile(dir2, "org/sample/ServiceTest.kt", """
             package org.sample
             
-            class Test2 {
+            class ServiceTest {
                 fun test() {}
             }
         """.trimIndent())
@@ -163,8 +163,8 @@ class ListTestClassesFromSourceTaskTest {
         val result = task.findTestClassesFromSourceFiles(setOf(dir1, dir2))
         
         assertThat(result).containsExactlyInAnyOrder(
-            "com.example.Test1",
-            "org.sample.Test2"
+            "com.example.UserTest",
+            "org.sample.ServiceTest"
         )
     }
     
@@ -187,6 +187,155 @@ class ListTestClassesFromSourceTaskTest {
         val result = task.findTestClassesFromSourceFiles(setOf(srcDir))
         
         assertThat(result).containsExactly("com.example.TestClass")
+    }
+    
+    @Test
+    fun `extractClassesFromFile filters out non-test classes like data classes`() {
+        val sourceFile = createKotlinFile(tempDir, "MultipleClasses.kt", """
+            package com.example.kotlin
+            
+            import io.kotest.core.spec.style.DescribeSpec
+            
+            class HelloTestClass : DescribeSpec({
+                describe("hello") {
+                    it("should work") {}
+                }
+            })
+            
+            class GreetTestClass : DescribeSpec({
+                describe("greet") {
+                    it("should work") {}
+                }
+            })
+            
+            class SampleTestData(
+                val name: String,
+                val age: Int
+            )
+            
+            data class TestConfig(val url: String)
+            
+            class Helper {
+                fun help() {}
+            }
+        """.trimIndent())
+        
+        val result = task.extractClassesFromFile(sourceFile)
+        
+        assertThat(result).containsExactlyInAnyOrder(
+            "com.example.kotlin.HelloTestClass",
+            "com.example.kotlin.GreetTestClass"
+        )
+    }
+    
+    @Test
+    fun `extractClassesFromFile recognizes test classes by name patterns`() {
+        val sourceFile = createKotlinFile(tempDir, "TestByName.kt", """
+            package com.example
+            
+            class UserTest {
+                fun test() {}
+            }
+            
+            class ServiceTests {
+                fun test() {}
+            }
+            
+            class BehaviorSpec {
+                fun test() {}
+            }
+            
+            class ItShould {
+                fun test() {}
+            }
+            
+            class RegularClass {
+                fun test() {}
+            }
+            
+            class DataClass {
+                fun test() {}
+            }
+        """.trimIndent())
+        
+        val result = task.extractClassesFromFile(sourceFile)
+        
+        assertThat(result).containsExactlyInAnyOrder(
+            "com.example.UserTest",
+            "com.example.ServiceTests",
+            "com.example.BehaviorSpec",
+            "com.example.ItShould"
+        )
+    }
+    
+    @Test
+    fun `extractClassesFromFile recognizes test classes by inheritance`() {
+        val sourceFile = createKotlinFile(tempDir, "TestByInheritance.kt", """
+            package com.example
+            
+            import io.kotest.core.spec.style.*
+            
+            class MyDescribeTest : DescribeSpec({})
+            class MyFunTest : FunSpec({})
+            class MyStringTest : StringSpec({})
+            class MyShouldTest : ShouldSpec({})
+            class MyBehaviorTest : BehaviorSpec({})
+            class MyWordTest : WordSpec({})
+            class MyFreeTest : FreeSpec({})
+            class MyFeatureTest : FeatureSpec({})
+            class MyExpectTest : ExpectSpec({})
+            class MyAnnotationTest : AnnotationSpec()
+            
+            class RegularClassExtendingCustom : CustomBase()
+            class DataClassWithConstructor(val id: Int) : BaseEntity()
+        """.trimIndent())
+        
+        val result = task.extractClassesFromFile(sourceFile)
+        
+        assertThat(result).containsExactlyInAnyOrder(
+            "com.example.MyDescribeTest",
+            "com.example.MyFunTest",
+            "com.example.MyStringTest",
+            "com.example.MyShouldTest",
+            "com.example.MyBehaviorTest",
+            "com.example.MyWordTest",
+            "com.example.MyFreeTest",
+            "com.example.MyFeatureTest",
+            "com.example.MyExpectTest",
+            "com.example.MyAnnotationTest"
+        )
+    }
+    
+    @Test
+    fun `extractClassesFromFile excludes classes ending with TestData`() {
+        val sourceFile = createKotlinFile(tempDir, "TestDataClasses.kt", """
+            package com.example
+            
+            class SampleTestData(
+                val name: String,
+                val age: Int
+            )
+            
+            class UserTestData {
+                var id: Long = 0
+                var name: String = ""
+            }
+            
+            class ActualTest {
+                fun test() {}
+            }
+            
+            class TestDataProvider {
+                fun provide() {}
+            }
+            
+            class ConfigTestData(val url: String)
+        """.trimIndent())
+        
+        val result = task.extractClassesFromFile(sourceFile)
+        
+        // Should only find ActualTest, not the *TestData classes
+        assertThat(result).containsExactly("com.example.ActualTest")
     }
     
     private fun createKotlinFile(baseDir: File, relativePath: String, content: String): File {

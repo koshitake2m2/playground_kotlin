@@ -10,7 +10,7 @@ import io.kotest.matchers.shouldBe
  * ./gradlew :kotlin:test --rerun-tasks --tests com.example.kotlin.MultiTestClass
  * ```
  */
-class HelloTestClass : DescribeSpec({
+class HelloTestSpec : DescribeSpec({
     describe("hello") {
         it("should return hello world") {
             val result = "Hello, World!"
@@ -19,11 +19,31 @@ class HelloTestClass : DescribeSpec({
     }
 })
 
-class GreetTestClass : DescribeSpec({
+class GreetTestSpec : DescribeSpec({
     describe("greet") {
         it("should return greeting message") {
             val result = "Greetings, Universe!"
             result shouldBe "Greetings, Universe!"
         }
+        it("sample test data") {
+            val sampleData = SampleTestData("Alice", 30)
+            sampleData.name shouldBe "Alice"
+            sampleData.age shouldBe 30
+        }
     }
 })
+
+// This is not executed.
+class WorldTestClass : DescribeSpec({
+    describe("world") {
+        it("should return world message") {
+            val result = "World is beautiful!"
+            result shouldBe "World is beautiful!"
+        }
+    }
+})
+
+class SampleTestData(
+    val name: String,
+    val age: Int
+)
