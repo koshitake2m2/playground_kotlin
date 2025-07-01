@@ -34,14 +34,15 @@ class GreetTestSpec : DescribeSpec({
 })
 
 // This is not executed.
-class WorldTestClass : DescribeSpec({
-    describe("world") {
-        it("should return world message") {
-            val result = "World is beautiful!"
-            result shouldBe "World is beautiful!"
-        }
-    }
-})
+// If you comment out this, test will throw errors.
+//class WorldTestClass : DescribeSpec({
+//    describe("world") {
+//        it("should return world message") {
+//            val result = "World is beautiful!"
+//            result shouldBe "World is beautiful!"
+//        }
+//    }
+//})
 
 class SampleTestData(
     val name: String,

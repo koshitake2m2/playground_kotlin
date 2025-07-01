@@ -7,6 +7,30 @@ plugins {
     kotlin("jvm")
 }
 
+
+val testOutputLog = project.layout.buildDirectory.file("test-logs/test-output.log").get().asFile
+val standardOutputListener = StandardOutputListener { message ->
+    testOutputLog.appendText(message.toString())
+}
+
+gradle.taskGraph.whenReady {
+
+    tasks.withType<Test>().configureEach {
+        doFirst {
+            println("Running tests...")
+            testOutputLog.parentFile.mkdirs()
+            testOutputLog.writeText("") // Clear the log file before test run.
+            logging.addStandardOutputListener(standardOutputListener)
+            logging.addStandardErrorListener(standardOutputListener)
+        }
+        doLast {
+            println("Finished running tests.")
+            logging.removeStandardOutputListener(standardOutputListener)
+            logging.removeStandardErrorListener(standardOutputListener)
+        }
+    }
+}
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     filter {
@@ -45,6 +69,12 @@ tasks.withType<Test>().configureEach {
                 println("==========================================")
             }
         }))
+
+    }
+    doLast {
+        if (testOutputLog.readText().contains("PreconditionViolationException")) {
+            throw GradleException("PreconditionViolationException detected in test results.")
+        }
     }
 }
 
