@@ -72,9 +72,8 @@ tasks.withType<Test>().configureEach {
 
     }
     doLast {
-        if (testOutputLog.readText().contains("PreconditionViolationException")) {
-            throw GradleException("PreconditionViolationException detected in test results.")
-        }
+        val checker = TestOutputChecker()
+        checker.checkForPreconditionViolation(testOutputLog)
     }
 }
 
