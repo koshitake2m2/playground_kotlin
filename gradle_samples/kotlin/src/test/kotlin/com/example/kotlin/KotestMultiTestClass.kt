@@ -35,14 +35,14 @@ class KotestGreetTestSpec : DescribeSpec({
 
 // This is not executed.
 // If you comment out this, test will throw errors.
-class KotestWorldData : DescribeSpec({
-    describe("world") {
-        it("should return world message") {
-            val result = "World is beautiful!"
-            result shouldBe "World is beautiful!"
-        }
-    }
-})
+//class KotestWorldData : DescribeSpec({
+//    describe("world") {
+//        it("should return world message") {
+//            val result = "World is beautiful!"
+//            result shouldBe "World is beautiful!"
+//        }
+//    }
+//})
 
 class KotestSampleData(
     val name: String,

@@ -32,6 +32,7 @@ gradle.taskGraph.whenReady {
 }
 
 tasks.withType<Test>().configureEach {
+    dependsOn("checkTestInclusion")
     useJUnitPlatform()
     filter {
         includeTestsMatching("*Test")

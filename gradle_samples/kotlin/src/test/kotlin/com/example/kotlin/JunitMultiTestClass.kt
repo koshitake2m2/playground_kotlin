@@ -1,7 +1,9 @@
 package com.example.kotlin
 
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
 
 class JunitHelloTest {
@@ -28,11 +30,24 @@ class JunitHelloSpec {
 
 // This is not executed.
 // If you comment out this, test will throw errors.
-class JunitWorldData {
-    @Test
-    fun `should return world message`() {
-        val result = "Hello, World!"
-        result shouldBe "Hello, World!"
+//class JunitWorldData {
+//    @Test
+//    fun `should return world message`() {
+//        val result = "Hello, World!"
+//        result shouldBe "Hello, World!"
+//    }
+//}
+
+class JunitNestedTest {
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_METHOD)
+    inner class JunitNestedHelloTest {
+        @Test
+        fun `should return nested hello world`() {
+            val result = "Hello, Nested World!"
+            result shouldBe "Hello, Nested World!"
+        }
     }
 }
 
