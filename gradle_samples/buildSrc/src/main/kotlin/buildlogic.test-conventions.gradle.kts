@@ -88,3 +88,5 @@ tasks.register<ListTestClassesFromCompiledTask>("listTestClassesFromCompiled") {
 tasks.register<CheckTestInclusionTask>("checkTestInclusion") {
     dependsOn("testClasses")
 }
+
+tasks.register<CheckTestFileNamingTask>("checkTestFileNaming")
