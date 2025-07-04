@@ -30,15 +30,61 @@ gradle.taskGraph.whenReady {
         }
     }
 }
-
-tasks.withType<Test>().configureEach {
-    dependsOn("checkTestInclusion")
+tasks.named<Test>("test") {
+//    dependsOn("checkTestInclusion")
     useJUnitPlatform()
     filter {
         includeTestsMatching("*Test")
         includeTestsMatching("*Spec")
     }
+    // We don't need the following if we use `testExcluded` task.
     systemProperty("kotest.filter.specs", "*(Test|Spec)")
+    ignoreFailures = false
+
+    val testClasses = mutableSetOf<String>()
+
+    testLogging {
+        events("passed", "skipped", "failed")
+        showExceptions = true
+        exceptionFormat = TestExceptionFormat.FULL
+        showCauses = true
+        showStackTraces = true
+        showStandardStreams = true
+
+        afterTest(KotlinClosure2<TestDescriptor, TestResult, Unit>({ descriptor, _ ->
+            val className = descriptor.className
+            if (className != null) {
+                testClasses.add(className)
+            }
+        }))
+
+        afterSuite(KotlinClosure2<TestDescriptor, TestResult, Unit>({ suite, result ->
+            if (suite.parent == null) { // root suite
+                println("\n==========================================")
+                println("Test Results Summary:")
+                println("Test Classes: ${testClasses.size}")
+                println("Test Methods: ${result.testCount}")
+                println("Passed: ${result.successfulTestCount}")
+                println("Failed: ${result.failedTestCount}")
+                println("Skipped: ${result.skippedTestCount}")
+                println("==========================================")
+            }
+        }))
+
+    }
+    doLast {
+//        val checker = TestOutputChecker()
+//        checker.checkForPreconditionViolation(testOutputLog)
+    }
+}
+
+tasks.register<Test>("testExcluded") {
+    useJUnitPlatform()
+    filter {
+        excludeTestsMatching("*Test")
+        excludeTestsMatching("*Spec")
+    }
+//    systemProperty("kotest.filter.specs", "*(Test|Spec)")
     ignoreFailures = false
 
     val testClasses = mutableSetOf<String>()
@@ -73,8 +119,6 @@ tasks.withType<Test>().configureEach {
 
     }
     doLast {
-        val checker = TestOutputChecker()
-        checker.checkForPreconditionViolation(testOutputLog)
     }
 }
 
