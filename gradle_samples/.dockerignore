@@ -1,0 +1,28 @@
+# Gradle build directories
+**/build/
+**/.gradle/
+
+# IDE directories
+**/.idea/
+**/.vscode/
+**/out/
+
+# Git directory
+.git/
+.gitignore
+
+# Documentation
+*.md
+!CLAUDE.md
+
+# Test results and reports
+**/test-results/
+**/reports/
+
+# Docker directories (avoid copying docker files into docker context)
+docker/
+
+# Temporary files
+**/*.tmp
+**/*.log
+**/.DS_Store

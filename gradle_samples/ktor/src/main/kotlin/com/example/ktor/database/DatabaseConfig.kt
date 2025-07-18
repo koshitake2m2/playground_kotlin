@@ -12,9 +12,12 @@ object DatabaseConfig {
     
     // Use environment variable to switch between databases
     fun getJdbcUrl(): String {
-        return when (System.getenv("DB_TYPE")) {
-            "migrated" -> MYSQL_MIGRATED_URL
-            else -> MYSQL_FLYWAY_URL
+        val dbHost = System.getenv("DB_HOST") ?: "localhost"
+        val dbPort = System.getenv("DB_PORT") ?: when (System.getenv("DB_TYPE")) {
+            "migrated" -> "3311"
+            else -> "3310"
         }
+        
+        return "jdbc:mysql://$dbHost:$dbPort/sample_db?useSSL=false&allowPublicKeyRetrieval=true"
     }
 }

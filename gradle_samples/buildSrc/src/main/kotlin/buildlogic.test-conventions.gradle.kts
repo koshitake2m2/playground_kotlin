@@ -80,10 +80,10 @@ tasks.named<Test>("test") {
 
 tasks.register<Test>("testExcluded") {
     useJUnitPlatform()
-    filter {
-        excludeTestsMatching("*Test")
-        excludeTestsMatching("*Spec")
-    }
+//    filter {
+//        excludeTestsMatching("*Test")
+//        excludeTestsMatching("*Spec")
+//    }
 //    systemProperty("kotest.filter.specs", "*(Test|Spec)")
     ignoreFailures = false
 

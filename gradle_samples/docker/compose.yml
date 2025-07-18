@@ -54,3 +54,21 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
+
+  ktor-app:
+    build:
+      context: ../
+      dockerfile: docker/ktor/Dockerfile
+    platform: linux/x86_64
+    ports:
+      - 10000:10000
+    environment:
+      DB_TYPE: 'flyway'
+      DB_HOST: 'mysql8'
+      DB_PORT: '3306'
+      TZ: 'Asia/Tokyo'
+    depends_on:
+      mysql8:
+        condition: service_healthy
+      mysql-flyway:
+        condition: service_completed_successfully
