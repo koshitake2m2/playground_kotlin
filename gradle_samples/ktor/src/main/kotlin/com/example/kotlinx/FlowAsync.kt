@@ -248,6 +248,38 @@ object ParallelProcessingFlatMapMergeMain {
     }
 }
 
+object ParallelProcessingFlatMapMergeSemaphoreMain {
+
+    private fun streamChunks(): Flow<List<Int>> = flow {
+        repeat(5) { emit((it * 5 + 1..it * 5 + 5).toList()) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @JvmStatic
+    fun main(args: Array<String>) {
+        val semaphore = Semaphore(2)
+        runBlocking {
+            println("=== Parallel Processing ===")
+            streamChunks()
+                .flatMapMerge(concurrency = 3) { chunk ->
+                    flow {
+                        chunk.asFlow().map { it ->
+                            async {
+                                semaphore.withPermit {
+                                    FlowAsync.simulateAsyncWork(it)
+                                }
+                            }
+                        }.toList().awaitAll()
+                        emit(null)
+                        println("Chunk processed: $chunk")
+                    }
+                }.collect()
+
+            println("All chunks processed!")
+        }
+    }
+}
+
 object ParallelProcessingChannelFlowMain {
 
     private fun streamChunks(): Flow<List<Int>> = flow {
